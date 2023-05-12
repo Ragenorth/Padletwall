@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>My Padlet Wall</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>My Padlet Wall</h1>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" required></textarea>
+            <input type="submit" value="Post">
+        </form>
+        <ul id="messages"></ul>
+    </div>
+    <script>
+        // Retrieve messages from local storage or create empty array
+        let messages = JSON.parse(localStorage.getItem('messages')) || [];
+
+        // Display existing messages on page load
+        for (let i = 0; i < messages.length; i++) {
+            let message = messages[i];
+            let div = document.createElement('div');
+            div.innerHTML = '<strong>' + message.name + '</strong>: ' + message.message + '<button class="delete-btn">Delete</button>';
+            document.getElementById('messages').appendChild(div);
+        }
+
+        // Handle form submit
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let nameInput = document.getElementById('name');
+            let messageInput = document.getElementById('message');
+            let name = nameInput.value.trim();
+            let message = messageInput.value.trim();
+            if (name && message) {
+                // Add message to list
+                messages.push({ name, message });
+                // Save messages to local storage
+                localStorage.setItem('messages', JSON.stringify(messages));
+                // Display message on page
+                let div = document.createElement('div');
+                div.innerHTML = '<strong>' + name + '</strong>: ' + message + '<button class="delete-btn">Delete</button>';
+                document.getElementById('messages').appendChild(div);
+                // Clear form inputs
+                nameInput.value = '';
+                messageInput.value = '';
+            }
+        });
+
+        // Handle delete button click
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-btn')) {
+                let messageDiv = e.target.parentNode;
+                let messageIndex = Array.from(messageDiv.parentNode.children).indexOf(messageDiv);
+                // Remove message from list
+                messages.splice(messageIndex, 1);
+                // Save messages to local storage
+                localStorage.setItem('messages', JSON.stringify(messages));
+                // Remove message from web page
+                messageDiv.remove();
+            }
+        });
+
+    </script>
+</body>
+</html>
